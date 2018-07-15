@@ -23,7 +23,11 @@ from baselines.her.util import convert_episode_to_batch_major, store_args
 env = DobotReachEnv()
 
 def update_env(event):
+    global x,y,z
     goal = np.array([w1.get(),w2.get(),w3.get()])
+    x = w1.get()
+    y = w2.get()
+    z = w3.get()
     env.set_goal(goal)
 
 root = Tk()
@@ -110,3 +114,4 @@ while True:
     g = obs['desired_goal']
     
     env.render()
+

@@ -36,13 +36,10 @@ def main(env,policy_file, seed, n_test_rollouts, render):
         env = getattr(envs,env)()
 
     # obs = env.reset(goal=env.real2sim([150,0,0]))
-    obs = env.reset([0.8,0.87,0.03])  
+    obs = env.reset([0.8,0.685,0.032])  
     o = obs['observation']
     ag = obs['achieved_goal']
     g = obs['desired_goal']
-
-    print(o)
-    return
 
     
 
@@ -54,9 +51,7 @@ def main(env,policy_file, seed, n_test_rollouts, render):
                 noise_eps=0,
                 random_eps=0,
                 use_target_net=False)
-        # print(policy_output)
-        if t==25:
-            env.set_goal([0.95,0.8,0.02])
+
         obs,_,_,_ = env.step(policy_output)
         
         o = obs['observation']
