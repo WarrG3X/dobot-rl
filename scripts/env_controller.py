@@ -28,20 +28,21 @@ def update_env(event):
     x = w1.get()
     y = w2.get()
     z = w3.get()
-    env.set_goal(goal)
+    print(env.sim2real(env.real2sim(goal)))
+    env.set_goal(env.real2sim(goal))
 
 root = Tk()
 root.title("Dobot Controller")
 root.geometry("300x300")
-w1 = Scale(root, from_=-2, to=2, orient=HORIZONTAL,label="X Coordinate",resolution=0.01,command=update_env)
+w1 = Scale(root, from_=170, to=290, orient=HORIZONTAL,label="X Coordinate",resolution=1,command=update_env)
 w1.pack()
-w2 = Scale(root, from_=-2, to=2, orient=HORIZONTAL,label="Y Coordinate",resolution=0.01,command=update_env)
+w2 = Scale(root, from_=-150, to=150, orient=HORIZONTAL,label="Y Coordinate",resolution=1,command=update_env)
 w2.pack()
-w3 = Scale(root, from_=-2, to=2, orient=HORIZONTAL,label="Z Coordinate",resolution=0.01,command=update_env)
+w3 = Scale(root, from_=-30, to=30, orient=HORIZONTAL,label="Z Coordinate",resolution=1,command=update_env)
 w3.pack()
 
-x = 0.8
-y = 0.75
+x = 230
+y = 0
 z = 0
 w1.set(x)
 w2.set(y)
@@ -50,32 +51,32 @@ w3.set(z)
 
 def leftKey(event):
     global x,y,z
-    x -= 0.01
+    x -= 1
     w1.set(x)
 
 def rightKey(event):
     global x,y,z
-    x += 0.01
+    x += 1
     w1.set(x)
 
 def upKey(event):
     global x,y,z
-    y -= 0.01
+    y -= 1
     w2.set(y)
 
 def downKey(event):
     global x,y,z
-    y += 0.01
+    y += 1
     w2.set(y)
 
 def wKey(event):
     global x,y,z
-    z -= 0.01
+    z -= 1
     w3.set(z)
 
 def sKey(event):
     global x,y,z
-    z += 0.01
+    z += 1
     w3.set(z)
 
 root.bind('<Left>', leftKey)

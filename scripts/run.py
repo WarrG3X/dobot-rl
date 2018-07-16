@@ -12,6 +12,11 @@ from collections import deque
 from mujoco_py import MujocoException
 
 from baselines.her.util import convert_episode_to_batch_major, store_args
+from dobot_helper_functions import *
+global dType
+global api
+
+import time
 
 @click.command()
 @click.option('--env', type=str, default='DobotReachEnv')
@@ -36,35 +41,64 @@ def main(env,policy_file, seed, n_test_rollouts, render):
         env = getattr(envs,env)()
 
     # obs = env.reset(goal=env.real2sim([150,0,0]))
-    obs = env.reset([0.8,0.685,0.032])  
-    o = obs['observation']
-    ag = obs['achieved_goal']
-    g = obs['desired_goal']
-
-    
-
-
-    for t in range(T):
-        policy_output = policy.get_actions(
-                o, ag, g,
-                compute_Q=False,
-                noise_eps=0,
-                random_eps=0,
-                use_target_net=False)
-
-        obs,_,_,_ = env.step(policy_output)
-        
+    for n in range(n_test_rollouts):
+        obs = env.reset()  
         o = obs['observation']
         ag = obs['achieved_goal']
         g = obs['desired_goal']
-        
-        if render:
-            env.render()
 
         
+        points = []
+
+        for t in range(T):
+            policy_output = policy.get_actions(
+                    o, ag, g,
+                    compute_Q=False,
+                    noise_eps=0,
+                    random_eps=0,
+                    use_target_net=False)
+
+            obs,_,_,_ = env.step(policy_output)
+            
+            o = obs['observation']
+            ag = obs['achieved_goal']
+            g = obs['desired_goal']
+
+            pos = env.sim2real(o[:3])
+            points.append(pos)
+            
+            if render:
+                env.render()
+
+
+
+        # for p in points:
+        #     print(p)
+        #     # input(">")
+        #     x,y,z = p
+        #     r = 45
+        #     movexyz(x,y,z,r,q=0)
+        
+        p = points[0]
+        print(p)
+        x,y,z = p
+        r = 45
+        movexyz(x,y,z,r,q=1)
+        
+        p = points[-1]
+        print(p)
+        x,y,z = p
+        r = 45
+        movexyz(x,y,z,r,q=1)
+
 
 
 
 
 if __name__ == '__main__':
-    main()
+    dType,api=init()
+    input("Run Policy?")
+    try:
+        main()
+    finally:
+        dType.DisconnectDobot(api)
