@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 import gym
 import gym_dobot.envs as envs
+import gym.envs.robotics as envs2
 
 from baselines import logger
 from baselines.common import set_global_seeds
@@ -21,8 +22,8 @@ api = None
 import time
 
 @click.command()
-@click.option('--env', type=str, default='DobotReachEnv')
-@click.argument('policy_file', type=str,default='dobot_reach_policy_best.pkl')
+@click.option('--env', type=str, default='FetchPickAndPlaceEnv')
+@click.argument('policy_file', type=str,default='fetch_pick_policy_best.pkl')
 @click.option('--seed', type=int, default=0)
 @click.option('--n_test_rollouts', type=int, default=10)
 @click.option('--render', type=int, default=1)
@@ -44,7 +45,7 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
 
     #Load Env
     if 'etch' in env:
-        env = gym.make(env)
+        env = getattr(envs2,env)()
     elif 'obot' in env:
         env = getattr(envs,env)()
 
@@ -72,8 +73,8 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
             ag = obs['achieved_goal']
             g = obs['desired_goal']
 
-            pos = env.sim2real(o[:3])
-            points.append(pos)
+            # pos = env.sim2real(o[:3])
+            # points.append(pos)
             
             if render:
                 env.render()
