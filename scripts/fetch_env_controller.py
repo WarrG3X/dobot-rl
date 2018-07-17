@@ -90,7 +90,7 @@ root.bind('<s>', sKey)
 set_global_seeds(0)
 
 # Load policy.
-with open('fetch_policy_best.pkl', 'rb') as f:
+with open('fetch_reach_policy_best.pkl', 'rb') as f:
     policy = pickle.load(f)
 
 
