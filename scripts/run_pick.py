@@ -58,6 +58,8 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
 
         
         points = []
+        maxx = 0
+        minn = 100
 
         for t in range(T):
             policy_output = policy.get_actions(
@@ -73,8 +75,16 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
             ag = obs['achieved_goal']
             g = obs['desired_goal']
 
-            # pos = env.sim2real(o[:3])
-            # points.append(pos)
+            pos = env.sim2real(o[:3])
+            # pos.append(policy_output[3])
+
+            # if policy_output[3] > maxx:
+            #     maxx = policy_output[3]
+
+            # if policy_output[3] < minn:
+            #     minn = policy_output[3]
+
+            points.append(pos)
             
             if render:
                 env.render()
@@ -83,20 +93,23 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
 
         if robot:
         
-            p = points[0]
+            p = points[0][:3]
+            # g = points[3]
             print(p)
             x,y,z = p
             r = 45
             movexyz(x,y,z,r,q=1)
             
-            p = points[-1]
+            p = points[0][:3]
+            # g = points[3]
             print(p)
             x,y,z = p
             r = 45
             movexyz(x,y,z,r,q=1)
 
 
-
+        print(points)
+        # print(maxx,minn)
 
 
 if __name__ == '__main__':

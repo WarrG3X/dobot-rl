@@ -135,7 +135,7 @@ def init():
         
     global api   
     api = dType.load()
-    state = dType.ConnectDobot(api, "ttyUSB1", 115200)[0]
+    state = dType.ConnectDobot(api, "ttyUSB0", 115200)[0]
     print("Connect status:",CON_STR[state])
     
     
@@ -183,7 +183,7 @@ def setup():
         
     global api   
     api = dType.load()
-    state = dType.ConnectDobot(api, "ttyUSB4", 115200)[0]
+    state = dType.ConnectDobot(api, "ttyUSB0", 115200)[0]
     print("Connect status:",CON_STR[state])    
     
     dType.SetQueuedCmdStopExec(api)

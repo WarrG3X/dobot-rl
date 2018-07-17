@@ -73,8 +73,8 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
             ag = obs['achieved_goal']
             g = obs['desired_goal']
 
-            # pos = env.sim2real(o[:3])
-            # points.append(pos)
+            pos = env.sim2real(o[:3])
+            points.append(pos)
             
             if render:
                 env.render()
