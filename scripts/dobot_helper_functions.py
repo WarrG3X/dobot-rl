@@ -77,6 +77,7 @@ def gripmode(grip=0,q=1):
             dType.SetQueuedCmdClear(api)
     else:
         dType.SetEndEffectorGripper(api,1,grip,isQueued=0)
+        time.sleep(.5)
         dType.SetEndEffectorGripper(api,0,grip,isQueued=0)
     
     
@@ -134,7 +135,7 @@ def init():
         
     global api   
     api = dType.load()
-    state = dType.ConnectDobot(api, "ttyUSB0", 115200)[0]
+    state = dType.ConnectDobot(api, "ttyUSB1", 115200)[0]
     print("Connect status:",CON_STR[state])
     
     

@@ -12,16 +12,21 @@ global dType
 global api
 
 dType,api=init()
+grip = 0
 while True:
     i = input("Prompt>>")
     if i== 'q':
         break
-    try:
-        x,y,z,r = [int(x) for x in i.split()]
-        movexyz(x,y,z,r)
-    except:
-        print("Error Value : Exiting")
-        break
+    elif i=='g':
+        grip = grip ^ 1
+        gripmode(grip,q=0)
+    else:
+        try:
+            x,y,z,r = [int(x) for x in i.split()]
+            movexyz(x,y,z,r)
+        except:
+            print("Error Value : Exiting")
+            break
 
 dType.DisconnectDobot(api)
 
