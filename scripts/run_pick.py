@@ -59,7 +59,7 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
 
         
         points = []
-        grip = []
+        grips = []
         maxx = 0
         minn = 100
 
@@ -79,7 +79,8 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
 
             pos = env.sim2real(o[:3])
             points.append(pos)
-            grip.append(policy_output[3])
+            grip = int((np.sign(policy_output[3])+1) / 2)
+            grips.append(grip)
             
             
             if render:
@@ -92,16 +93,19 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
                     
         for p in points:
             # print(p)
-            id = p[0]
+            id = int(p[0])
             p = p[1:]
+            g = grips[id]
             x,y,z = p
             r = 45
+
+            print(id,p,g)
             if robot:
                 movexyz(x,y,z,r,q=1)
+                gripmode(g,q=0)
 
 
-        print(grip)
-
+        print(grips)
 
 
 if __name__ == '__main__':
