@@ -33,7 +33,9 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
     
     if robot:
         dType,api=init()
+        gripmode(0,q=0)
         input("Run Policy?")
+        
 
     set_global_seeds(seed)
 
@@ -52,7 +54,9 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
 
     # obs = env.reset(goal=env.real2sim([150,0,0]))
     for n in range(n_test_rollouts):
-        obs = env.reset()  
+        # obs = env.reset(goal=env.real2sim([230,84,30]))
+        obs = env.reset()
+        env.set_object(env.real2sim([230,0,0]))
         o = obs['observation']
         ag = obs['achieved_goal']
         g = obs['desired_goal']
@@ -85,25 +89,61 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
                 env.render()
 
 
+        # Use Visvalingam-Whyatt method of poly-line vertex reduction
         simplifier = VWSimplifier(points)
-        points = simplifier.from_number(10)
+        traj_points = simplifier.from_number(10)
+        
 
-                    
-        for p in points:
+        #Calculate Points where Gripper value switches
+        grip_points = []
+
+        for p in range(1,T):
+
+            if grips[p]!=grips[p-1] and p not in traj_points[:,0]:
+                grip_points.append(np.append(p,points[p]))
+
+        # print("t")
+        # print(traj_points)
+        # print("g")
+        # print(grip_points)
+        # print("G")
+        # print(grips)
+
+
+
+        #Combine Both
+        # print(traj_points.shape,grip_points.shape)
+        # grip_points = []
+        grip_points = np.array(grip_points)
+        print(grips)
+        print("-------------")
+        print(grip_points)
+        print("-------------")
+        if grip_points != []:
+            final_points = np.concatenate((traj_points,grip_points),axis=0)
+            final_points = final_points[final_points[:,0].argsort()]
+            # print(final_points)
+        else:
+            final_points = traj_points
+
+
+        current_g = 0
+        for p in final_points:
             # print(p)
             id = int(p[0])
             p = p[1:]
             g = grips[id]
             x,y,z = p
-            r = 45
+            r = 150
 
             print(id,p,g)
             if robot:
                 movexyz(x,y,z,r,q=1)
-                gripmode(g,q=0)
+                if g!=current_g:
+                    current_g = g
+                    gripmode(g,q=0)
 
 
-        print(grips)
 
 
 if __name__ == '__main__':

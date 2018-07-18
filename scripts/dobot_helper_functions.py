@@ -41,7 +41,7 @@ def go_up():
     movexyz(dType,api,current_pos[0],current_pos[1],current_pos[2]+20,current_pos[3])
 
 
-def gripmode(grip=0,q=1):
+def gripmode(grip=0,q=1,t=0.5):
     if q==1:
         if grip==0:
             lastIndex=dType.SetEndEffectorGripper(api,1,grip,isQueued=1)[0]   # control,enable/disable
@@ -77,7 +77,7 @@ def gripmode(grip=0,q=1):
             dType.SetQueuedCmdClear(api)
     else:
         dType.SetEndEffectorGripper(api,1,grip,isQueued=0)
-        time.sleep(.5)
+        time.sleep(t)
         dType.SetEndEffectorGripper(api,0,grip,isQueued=0)
     
     
