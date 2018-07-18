@@ -59,6 +59,7 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
 
         
         points = []
+        grip = []
         maxx = 0
         minn = 100
 
@@ -77,15 +78,9 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
             g = obs['desired_goal']
 
             pos = env.sim2real(o[:3])
-            # pos.append(policy_output[3])
-
-            # if policy_output[3] > maxx:
-            #     maxx = policy_output[3]
-
-            # if policy_output[3] < minn:
-            #     minn = policy_output[3]
-
             points.append(pos)
+            grip.append(policy_output[3])
+            
             
             if render:
                 env.render()
@@ -94,19 +89,19 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
         simplifier = VWSimplifier(points)
         points = simplifier.from_number(10)
 
-
-        if robot:
-        
-            for p in points:
-                print(p)
-                x,y,z = p
-                r = 45
+                    
+        for p in points:
+            # print(p)
+            id = p[0]
+            p = p[1:]
+            x,y,z = p
+            r = 45
+            if robot:
                 movexyz(x,y,z,r,q=1)
 
 
-        
-        # print(VWpts)
-        # print(maxx,minn)
+        print(grip)
+
 
 
 if __name__ == '__main__':

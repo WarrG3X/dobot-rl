@@ -197,7 +197,12 @@ class VWSimplifier(object):
           threshold = thresholds[int(n)]
         except IndexError:
           return self.pts
-        return self.pts[self.thresholds > threshold]
+        # idxes = [int(x) for x in self.thresholds > threshold]
+        ref_idxes = self.thresholds > threshold
+        idxes = np.array([x for x in range(len(self.pts)) if ref_idxes[x] == 1])
+        idxes = idxes.reshape(n,1)
+        pts = self.pts[ref_idxes]
+        return np.concatenate((idxes,pts),axis=1)
 
     def from_ratio(self,r):
         if r<=0 or r>1:
