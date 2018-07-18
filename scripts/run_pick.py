@@ -20,6 +20,7 @@ dtype = None
 api = None
 
 import time
+from polysimplify import VWSimplifier
 
 @click.command()
 @click.option('--env', type=str, default='FetchPickAndPlaceEnv')
@@ -90,25 +91,21 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
                 env.render()
 
 
+        simplifier = VWSimplifier(points)
+        points = simplifier.from_number(10)
+
 
         if robot:
         
-            p = points[0][:3]
-            # g = points[3]
-            print(p)
-            x,y,z = p
-            r = 45
-            movexyz(x,y,z,r,q=1)
-            
-            p = points[0][:3]
-            # g = points[3]
-            print(p)
-            x,y,z = p
-            r = 45
-            movexyz(x,y,z,r,q=1)
+            for p in points:
+                print(p)
+                x,y,z = p
+                r = 45
+                movexyz(x,y,z,r,q=1)
 
 
-        print(points)
+        
+        # print(VWpts)
         # print(maxx,minn)
 
 
