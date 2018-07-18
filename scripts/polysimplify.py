@@ -198,11 +198,11 @@ class VWSimplifier(object):
         except IndexError:
           return self.pts
         # idxes = [int(x) for x in self.thresholds > threshold]
-        ref_idxes = self.thresholds > threshold
-        idxes = np.array([x for x in range(len(self.pts)) if ref_idxes[x] == 1])
-        idxes = idxes.reshape(n,1)
-        pts = self.pts[ref_idxes]
-        return np.concatenate((idxes,pts),axis=1)
+        self.ref_idxes = self.thresholds > threshold
+        self.idxes = np.array([x for x in range(len(self.pts)) if self.ref_idxes[x] == 1])
+        self.idxes = self.idxes.reshape(len(self.idxes),1)
+        self.pts = self.pts[self.ref_idxes]
+        return np.concatenate((self.idxes,self.pts),axis=1)
 
     def from_ratio(self,r):
         if r<=0 or r>1:

@@ -60,8 +60,6 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
         
         points = []
         grips = []
-        maxx = 0
-        minn = 100
 
         for t in range(T):
             policy_output = policy.get_actions(
