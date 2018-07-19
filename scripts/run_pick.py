@@ -33,7 +33,9 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
     
     if robot:
         dType,api=init()
-        gripmode(0,q=0)
+        # gripmode(1,q=0,t=0.5)
+        # time.sleep(0.01)
+        # gripmode(0,q=0,t=0.5)
         input("Run Policy?")
         
 
@@ -54,7 +56,11 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
 
     # obs = env.reset(goal=env.real2sim([150,0,0]))
     for n in range(n_test_rollouts):
-        # obs = env.reset(goal=env.real2sim([230,84,30]))
+        if robot:
+            movexyz(230,0,30,0,q=1)
+            gripmode(0,q=0,t=0.5)
+            
+        # obs = env.reset(goal=env.real2sim([290,0,0]))
         obs = env.reset()
         env.set_object(env.real2sim([230,0,0]))
         o = obs['observation']
@@ -81,7 +87,7 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
 
             pos = env.sim2real(o[:3])
             points.append(pos)
-            grip = int((np.sign(policy_output[3])+1) / 2)
+            grip = int((np.sign(policy_output[3])+1) / 2) ^ 1
             grips.append(grip)
             
             
@@ -134,14 +140,15 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
             p = p[1:]
             g = grips[id]
             x,y,z = p
-            r = 150
+            r = 0
 
             print(id,p,g)
             if robot:
+                # input(">")
                 movexyz(x,y,z,r,q=1)
                 if g!=current_g:
                     current_g = g
-                    gripmode(g,q=0)
+                    gripmode(g,q=0,t=0.5)
 
 
 

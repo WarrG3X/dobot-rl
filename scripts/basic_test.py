@@ -18,8 +18,13 @@ while True:
     if i== 'q':
         break
     elif i=='g':
-        grip = grip ^ 1
-        gripmode(grip,q=0)
+        gi = input("GPrompt>>")
+        gi = [float(x) for x in gi.split()]
+        g = int(gi[0])
+        t = gi[1]
+        # grip = grip ^ 1
+        # gripmode(grip,q=0)
+        gripmode(g,q=0,t=t)
     else:
         try:
             x,y,z,r = [int(x) for x in i.split()]
