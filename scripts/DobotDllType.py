@@ -450,11 +450,16 @@ DobotCommunicate = enum(
 
 def load():
     if platform.system() == "Windows":
+        print("The Required Dll is not provided in this repo. Pls Download it separately.")
         return CDLL("DobotDll.dll",  RTLD_GLOBAL) 
     elif platform.system() == "Darwin" :
+        print("The Required Dll is not provided in this repo. Pls Download it separately.")
         return CDLL("libDobotDll.dylib",  RTLD_GLOBAL)
     else:
-        return cdll.LoadLibrary(os.path.abspath("libDobotDll.so.1.0.0"))
+        try:
+            return cdll.LoadLibrary(os.path.abspath("../utils/libDobotDll.so.1.0.0"))
+        except:
+            return cdll.LoadLibrary("libDobotDll.so.1.0.0")
     
 def dSleep(ms):
     """

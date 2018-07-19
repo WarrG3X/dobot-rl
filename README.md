@@ -1,2 +1,2 @@
-# dobot-magician
-Python Interface for the Dobot Magician Robotic Arm
+# dobot-rl
+Python Interface to control the Dobot Magician Robotic Arm using a trained policy
