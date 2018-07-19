@@ -64,7 +64,7 @@ class DobotController():
         else:
             dType.SetPTPCmd(self.api, dType.PTPMode.PTPMOVLXYZMode, x, y, z, r, isQueued = 0)
 
-    def grip(self,grip=0,q=0,t=0.5):
+    def grip(self,grip=0,t=0.5,q=0):
         if q==1:
             if grip==0:
                 lastIndex=dType.SetEndEffectorGripper(self.api,1,grip,isQueued=1)[0]   # control,enable/disable
