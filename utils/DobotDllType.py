@@ -457,12 +457,10 @@ def load():
         return CDLL("libDobotDll.dylib",  RTLD_GLOBAL)
     else:
         try:
-            return cdll.LoadLibrary(os.path.abspath("../utils/libDobotDll.so.1.0.0"))
+            return cdll.LoadLibrary(os.path.abspath("libDobotDll.so.1.0.0"))
         except:
-            try:
-                return cdll.LoadLibrary(os.path.abspath("libDobotDll.so.1.0.0"))
-            except:
-                return cdll.LoadLibrary("libDobotDll.so.1.0.0")
+            return cdll.LoadLibrary("libDobotDll.so.1.0.0")
+            
 def dSleep(ms):
     """
     t = time.time()

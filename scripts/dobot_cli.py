@@ -1,4 +1,4 @@
-from dobot_interface import DobotController
+from utils.dobot_interface import DobotController
 
 
 
