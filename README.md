@@ -8,6 +8,9 @@ Contents
 - [Installation](#installation)
 - [Usage](#usage)
 - [Documentation](#documentation)
+  - [DobotController](#dobotcontroller)
+  - [Mapping](#mapping)
+  - [Run Policy](#run-policy)
 
 ## Intro
 This repository currently provides - 
@@ -37,7 +40,7 @@ pip install -e .
 
 ## Usage
 ### Dobot Arm
-First step is to ensure that the arm is controllable. Connect the USB cable and use ``ls /dev`` to find which port it is using. Now make sure you have the proper accesss permission for this port by using ``chmod``. You'll have to do this each time you plug in the dobot. A much more convenient way would be to simply add the user to the ``dialout`` group.
+First step is to ensure that the arm is controllable. Connect the USB cable and use ``ls /dev`` to find which port it is using. Now make sure you have the proper access permission for this port by using ``chmod``. You'll have to do this each time you plug in the dobot. A much more convenient way would be to simply add the user to the ``dialout`` group.
 
 Now use the dobot-cli script to test it.
 
@@ -65,9 +68,15 @@ python -m dobot_rl.scripts.run_policy --robot=1 --env=FetchReach-v1 --policy_fil
 #To show available flags/options
 python -m dobot_rl.scripts.run_policy --help
 ``` 
+**Note - Ensure that the gripper is sideways with respect to the arm. Also preferably use a soft object (like Foam/Sponge) for the PickAndPlace task. Using hard objects is not recommended as the policy is not perfect and in some cases the arm tries to push into the object which can damage the arm. The most crucial part for the task to be succesfully executed is mapping from the sim to the real world, which is described [below](#mapping).**
+
 
 ## Documentation
-This section describes each of the aspects of the project in detail.
+This section describes each aspect of the project in detail.
 
-### Dobot Controller
+### DobotController
 The ``DobotController`` class in ``dobot_controller.py`` is used to interface with the arm.
+
+### Mapping
+
+### Run Policy
