@@ -2,42 +2,25 @@ import click
 import numpy as np
 import pickle
 import gym
-import gym_dobot.envs as envs
-import gym.envs.robotics as envs2
-
-from baselines import logger
-from baselines.common import set_global_seeds
-import baselines.her.experiment.config as config
-
-from collections import deque
-from mujoco_py import MujocoException
-
-from baselines.her.util import convert_episode_to_batch_major, store_args
-from dobot_helper_functions import *
-global dType
-global api
-dtype = None
-api = None
-
 import time
-from polysimplify import VWSimplifier
+from gym.envs.robotics import FetchPickAndPlaceEnv
+from baselines.common import set_global_seeds
+from dobot_rl.utils.dobot_controller import DobotController
+from dobot_rl.utils.polysimplify import VWSimplifier
 
 @click.command()
-@click.option('--env', type=str, default='FetchPickAndPlaceEnv')
-@click.argument('policy_file', type=str,default='fetch_pick_policy_best.pkl')
+@click.argument('policy_file', type=str,default='../policies/fetch_pick_policy_best.pkl')
 @click.option('--seed', type=int, default=0)
 @click.option('--n_test_rollouts', type=int, default=10)
 @click.option('--render', type=int, default=1)
 @click.option('--robot', type=int, default=0)
-def main(env,policy_file, seed, n_test_rollouts, render,robot):
-    
+@click.option('--port', type=str, default="ttyUSB0")
+def main(policy_file, seed, n_test_rollouts, render,robot,port):
+
     if robot:
-        dType,api=init()
-        # gripmode(1,q=0,t=0.5)
-        # time.sleep(0.01)
-        # gripmode(0,q=0,t=0.5)
+        #Initialize Robot
+        dobot = DobotController(port=port)
         input("Run Policy?")
-        
 
     set_global_seeds(seed)
 
@@ -48,17 +31,15 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
     #Set Time Horizon
     T = 50
 
-    #Load Env
-    if 'etch' in env:
-        env = getattr(envs2,env)()
-    elif 'obot' in env:
-        env = getattr(envs,env)()
+    #Load Environment
+    env = FetchPickAndPlaceEnv()
+
 
     # obs = env.reset(goal=env.real2sim([150,0,0]))
     for n in range(n_test_rollouts):
         if robot:
-            movexyz(230,0,30,0,q=1)
-            gripmode(0,q=0,t=0.5)
+            dobot.movexyz(230,0,30,0)
+            dobot.grip(0)
             
         # obs = env.reset(goal=env.real2sim([290,0,0]))
         obs = env.reset()
@@ -145,17 +126,15 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot):
             print(id,p,g)
             if robot:
                 # input(">")
-                movexyz(x,y,z,r,q=1)
+                dobot.movexyz(x,y,z,r)
                 if g!=current_g:
                     current_g = g
-                    gripmode(g,q=0,t=0.5)
+                    dobot.grip(g)
 
 
+    if current_g != 0:
+        dobot.grip(0)
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    finally:
-        if dtype!=None:
-            dType.DisconnectDobot(api)
+    main()

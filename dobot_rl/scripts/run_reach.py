@@ -22,6 +22,7 @@ def main(policy_file, seed, n_test_rollouts, render,robot,port):
     if robot:
         #Initialize Robot
         dobot = DobotController(port=port)
+        input("Run Policy?")
 
     set_global_seeds(seed)
 

@@ -49,7 +49,10 @@ class DobotController():
 
 
     def __del__(self):
-        dType.DisconnectDobot(self.api)
+        try:
+            dType.DisconnectDobot(self.api)
+        except:
+            pass
         print("Disconnected")
 
 
