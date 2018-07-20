@@ -1,8 +1,9 @@
+import click
 from dobot_rl.utils.dobot_controller import DobotController
 
 
 
-dobot = DobotController(port="ttyUSB0")
+
 
 def print_help():
     print("Dobot CLI Controller")
@@ -11,28 +12,34 @@ def print_help():
     print("Enter q to exit")
     print("Enter h to print this msg")
 
-print_help()
-while True:
-    try:
-        inp = input("Dobot>").split()
-        cmd = inp[0]
+@click.command()
+@click.option('--port', type=str, default="ttyUSB0",help='Port Name')
+def main(port):
+    dobot = DobotController(port=port)
+    print_help()
+    while True:
+        try:
+            inp = input("Dobot>").split()
+            cmd = inp[0]
 
-        if cmd=='q':
-            break
-        elif cmd=='h':
-            print_help()
-        
-        elif cmd=='g':
-            e = int(inp[1])
-            t = float(inp[2])
-            dobot.grip(e,t)
+            if cmd=='q':
+                break
+            elif cmd=='h':
+                print_help()
+            
+            elif cmd=='g':
+                e = int(inp[1])
+                t = float(inp[2])
+                dobot.grip(e,t)
 
-        elif cmd=='m':
-            x,y,z,r = [int(x) for x in inp[1:]]
-            dobot.movexyz(x,y,z,r)
-    except:
-        print("Invalid Command or Value. Exiting.")
-        exit()
+            elif cmd=='m':
+                x,y,z,r = [int(x) for x in inp[1:]]
+                dobot.movexyz(x,y,z,r)
+        except:
+            print("Invalid Command or Value. Exiting.")
+            exit()
 
 
 
+if __name__ == '__main__':
+    main()
