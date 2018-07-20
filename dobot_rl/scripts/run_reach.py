@@ -7,11 +7,16 @@ import time
 from gym.envs.robotics import FetchReachEnv
 from baselines.common import set_global_seeds
 
+import os
+import dobot_rl
 from dobot_rl.utils.dobot_controller import DobotController
 
 
+#Refer to the policies directory
+POLICY_DIR = path = os.path.split(dobot_rl.__file__)[0] + '/policies/'
+
 @click.command()
-@click.argument('policy_file', type=str,default='../policies/fetch_reach_policy_best.pkl')
+@click.argument('policy_file', type=str,default='fetch_reach_policy_best.pkl')
 @click.option('--seed', type=int, default=0)
 @click.option('--n_test_rollouts', type=int, default=10)
 @click.option('--render', type=int, default=1)
@@ -19,6 +24,8 @@ from dobot_rl.utils.dobot_controller import DobotController
 @click.option('--port', type=str, default="ttyUSB0")
 def main(policy_file, seed, n_test_rollouts, render,robot,port):
     
+    policy_file = POLICY_DIR + policy_file
+
     if robot:
         #Initialize Robot
         dobot = DobotController(port=port)
