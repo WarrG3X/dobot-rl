@@ -19,7 +19,7 @@ class DobotController():
             print("Error - Dobot Can't Connect")
             print("Possible Problems - ")
             print("1) Wrong Port. Pls check /dev and use the correct port.")
-            print("2) User doesn't have required priveleges for the port. Pls add user to dialot group or use chmod on the port.")
+            print("2) User doesn't have required priveleges for the port. Pls add user to dialout group or use chmod on the port.")
             print("3) Robot wasn't disconnected properly. Pls restart the robot and replug the USB and try again.")
             exit()
         if (state == dType.DobotConnect.DobotConnect_NoError):
