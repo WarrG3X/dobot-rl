@@ -1,27 +1,12 @@
 import numpy as np
 from tkinter import *
-
-import gym
-from gym_dobot.envs import DobotPickAndPlaceEnv, DobotPushEnv, DobotReachEnv
-
-import numpy as np
 import pickle
 import gym
-import gym_dobot.envs as envs
-import gym.envs.robotics as envs2
-
-from baselines import logger
+from gym.envs.robotics import FetchReachEnv
 from baselines.common import set_global_seeds
-import baselines.her.experiment.config as config
-
-from collections import deque
-from mujoco_py import MujocoException
-
-from baselines.her.util import convert_episode_to_batch_major, store_args
 
 
-
-env = envs2.FetchReachEnv()
+env = FetchReachEnv()
 
 def update_env(event):
     global x,y,z
@@ -33,7 +18,7 @@ def update_env(event):
     env.set_goal(env.real2sim(goal))
 
 root = Tk()
-root.title("Fetch Controller")
+root.title("Fetch Reach Visualizer")
 root.geometry("300x300")
 w1 = Scale(root, from_=170, to=290, orient=HORIZONTAL,label="X Coordinate",resolution=1,command=update_env)
 w1.pack()
