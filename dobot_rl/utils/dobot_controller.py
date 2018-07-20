@@ -11,6 +11,7 @@ class DobotController():
             dType.DobotConnect.DobotConnect_Occupied: "DobotConnect_Occupied"}
             
         self.api = dType.load()
+        print("Loaded API")
         state = dType.ConnectDobot(self.api, port, 115200)[0]
         print("Connect status:",CON_STR[state])
 

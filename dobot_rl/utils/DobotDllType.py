@@ -2,6 +2,8 @@ from ctypes import *
 import time, platform
 import os
 
+import dobot_rl
+
 def enum(**enums):
     return type('Enum', (), enums)
 
@@ -457,7 +459,10 @@ def load():
         return CDLL("libDobotDll.dylib",  RTLD_GLOBAL)
     else:
         try:
-            return cdll.LoadLibrary(os.path.abspath("libDobotDll.so.1.0.0"))
+            path = dobot_rl.__file__
+            path = os.path.split(path)[0] + "/utils/libDobotDll.so.1.0.0"
+            print(path)
+            return cdll.LoadLibrary(os.path.abspath(path))
         except:
             return cdll.LoadLibrary("libDobotDll.so.1.0.0")
             
