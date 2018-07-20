@@ -1,4 +1,7 @@
 '''
+Taken and modified from:
+https://github.com/Permafacture/Py-Visvalingam-Whyatt.git
+
 Visvalingam-Whyatt method of poly-line vertex reduction
 
 Visvalingam, M and Whyatt J D (1993)

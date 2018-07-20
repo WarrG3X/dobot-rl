@@ -1,14 +1,17 @@
-from utils.dobot_interface import DobotController
+from dobot_rl.utils.dobot_controller import DobotController
 
 
 
 dobot = DobotController(port="ttyUSB0")
 
-print("Dobot CLI Controller")
-print("Enter m <x> <y> <z> <r> to move to position x,y,z with rotation r")
-print("Enter g <e> <t> to set gripper to position e(0/1) and enable control for t seconds")
-print("Enter q to exit")
+def print_help():
+    print("Dobot CLI Controller")
+    print("Enter m <x> <y> <z> <r> to move to position x,y,z with rotation r")
+    print("Enter g <e> <t> to set gripper to position e(0/1) and enable control for t seconds")
+    print("Enter q to exit")
+    print("Enter h to print this msg")
 
+print_help()
 while True:
     try:
         inp = input("Dobot>").split()
@@ -16,6 +19,8 @@ while True:
 
         if cmd=='q':
             break
+        elif cmd=='h':
+            print_help()
         
         elif cmd=='g':
             e = int(inp[1])

@@ -1,4 +1,4 @@
-import DobotDllType as dType
+import dobot_rl.utils.DobotDllType as dType
 import time
 
 class DobotController():
