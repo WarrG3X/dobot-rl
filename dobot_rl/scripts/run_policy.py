@@ -41,6 +41,10 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot,port):
     T = 50
 
     #Load Environment
+    if 'Reach' in env:
+        N = 4
+    else:
+        N = 10
     env = gym.make(env).env
 
     for n in range(n_test_rollouts):
@@ -106,7 +110,7 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot,port):
 
         # Use Visvalingam-Whyatt method of poly-line vertex reduction. More details in the README.md
         simplifier = VWSimplifier(points)
-        traj_points = simplifier.from_number(10)
+        traj_points = simplifier.from_number(N)
         
 
         #List to store points relevant for gripping
