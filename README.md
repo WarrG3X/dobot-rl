@@ -36,12 +36,35 @@ pip install -e .
 ```
 
 ## Usage
-First step is to ensure that the arm is controllable. Use the dobot-cli script to test it.
+### Dobot Arm
+First step is to ensure that the arm is controllable. Connect the USB cable and use ``ls /dev`` to find which port it is using. Now make sure you have the proper accesss permission for this port by using ``chmod``. You'll have to do this each time you plug in the dobot. A much more convenient way would be to simply add the user to the ``dialout`` group.
+
+Now use the dobot-cli script to test it.
+
+**Note - Before running, ensure that the arm has enough space around it, as it moves around a bit for calibrating the initial position. This must be kept in mind whenever the arm is being initialized.**
+
 ```bash
- python -m dobot_rl.dobot_cli
+ #Default Port = ttyUSB0
+ python -m dobot_rl.scripts.dobot_cli
+ 
+ #For Any other port
+ python -m dobot_rl.scripts.dobot_cli --port=<ttyUSBX>
 ```
 
-Try typing the commands in the prompt to move the dobot-arm and test the gripper. If the arm doesn't move it's probably because the given coordinates are out of bound. Try ``m 230 0 0 0``.
+Try typing the commands shown in the ``dobot>`` prompt to move the dobot-arm and test the gripper. If the arm doesn't move it's probably because the given coordinates are out of bound. For example, try ``m 230 0 0 0`` for moving and `g 1 1` for the gripper.
+
+### Policy
+Currently the dobot arm can do the Reach task and the PickAndPlace task.
+```bash
+#To launch Reach
+python -m dobot_rl.scripts.run_policy --robot=1 --env=-v1 --policy_file=fetch_pick_policy_best.pkl
+
+#To launch PickAndPlace
+python -m dobot_rl.scripts.run_policy --robot=1 --env=FetchReach-v1 --policy_file=fetch_reach_policy_best.pkl
+
+#To show available flags/options
+python -m dobot_rl.scripts.run_policy --help
+``` 
 
 ## Documentation
 This section describes each of the aspects of the project in detail.
