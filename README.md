@@ -75,8 +75,22 @@ python -m dobot_rl.scripts.run_policy --help
 This section describes each aspect of the project in detail.
 
 ### DobotController
-The ``DobotController`` class in ``dobot_controller.py`` is used to interface with the arm.
+The ``DobotController`` class in ``dobot_controller.py`` is used to interface with the arm. For the dobot arm it is necessary that the underlying api that is being used is properly disconnected after each use which is ensured by this class. As mentioned in the [usage](#usage) section always ensure that the correct port is being used and the user has proper priveleges. 
 
+The ``DobotController`` class currently provides two functions - 
+ - movexyz(x,y,z,r,q) - Move to pos x,y,z with rotation r. There is some kind of bug with this method that the rotation, r only works for the first move command and then the gripper stops rotating for subsequent commands. But for now this isn't a major issue as the rotation has to be only set once in the beginning.
+ 
+ - grip(grip,t,q) - grip is a binary value (0/1) where 1 denotes closed and 0 denotes open. t refers to the duration for which to enable the vacuum pump. The default t=0.5 is enough to completely open and a close the gripper. A smaller value such as 0.35 will partially open/close the gripper, but usually the value must be greater than 0.2 to have any effect. It would be quite useful if a mapping from time duration to how wide the gripper opens is implemented in the future as that will provide much more precise control for harder tasks.
+ 
+ For both of these, q denotes whether the command is queued or not. Refer the [Dobot API](https://download.dobot.cc/development-protocol/dobot-magician/pdf/en/Dobot-Magician-API-Description.pdf) for a detailed description.
+ 
+ Currently only these both methods are implemented as these are sufficient to perform the required tasks. The ``dobot_helper_functions.py`` in the ``legacy_scripts`` folder has some additional methods which weren't re-implemented in ``dobot_controller.py``, but can be used as a reference to extend the functionality of ``DobotController`` class.
+ 
+ All the files needed for controlling the dobot arm are located in the ``utils`` folder - 
+  - ``dobot_controller.py`` - Contains ``DobotController`` class
+  - ``libDobotDll.so.1.0.0`` - The library needed by the API. Without this the API won't work.
+  - ``DobotDllType.py`` - The main file that actually implements the Dobot API. It is quite exhaustive and implements all the methods refered in the [Dobot API Description](https://download.dobot.cc/development-protocol/dobot-magician/pdf/en/Dobot-Magician-API-Description.pdf). It is also responsible for correctly loading the Dll file. It is currently set to first search in the ``utils`` folder and if that fails, it refers to the ``LD_LIBRARY_PATH``. So if you move this file somewhere else, ensure that ``libDobotDll.so.1.0.0`` can be found in one of the locations in ``LD_LIBRARY_PATH``.
+  
 ### Mapping
 
 ### Run Policy
