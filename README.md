@@ -60,12 +60,12 @@ Try typing the commands shown in the ``dobot>`` prompt to move the dobot-arm and
 Currently the dobot arm can do the Reach task and the PickAndPlace task.
 ```bash
 #To launch Reach
-python -m dobot_rl.scripts.run_policy --robot=1 --env=-v1 --policy_file=fetch_pick_policy_best.pkl
+python -m dobot_rl.scripts.run_policy --robot=1 --env=FetchPickAndPlace-v1 --policy_file=fetch_pick_policy_best.pkl
 
 #To launch PickAndPlace
 python -m dobot_rl.scripts.run_policy --robot=1 --env=FetchReach-v1 --policy_file=fetch_reach_policy_best.pkl
 
-#To show available flags/options
+#To show available flags / additonal options
 python -m dobot_rl.scripts.run_policy --help
 ``` 
 **Note - Ensure that the gripper is sideways with respect to the arm. Also preferably use a soft object (like Foam/Sponge) for the PickAndPlace task. Using hard objects is not recommended as the policy is not perfect and in some cases the arm tries to push into the object which can damage the arm. The most crucial part for the task to be succesfully executed is mapping from the sim to the real world, which is described [below](#mapping).**
@@ -78,9 +78,11 @@ This section describes each aspect of the project in detail.
 The ``DobotController`` class in ``dobot_controller.py`` is used to interface with the arm. For the dobot arm it is necessary that the underlying api that is being used is properly disconnected after each use which is ensured by this class. As mentioned in the [usage](#usage) section always ensure that the correct port is being used and the user has proper priveleges. 
 
 The ``DobotController`` class currently provides two functions - 
- - movexyz(x,y,z,r,q) - Move to pos x,y,z with rotation r. There is some kind of bug with this method that the rotation, r only works for the first move command and then the gripper stops rotating for subsequent commands. But for now this isn't a major issue as the rotation has to be only set once in the beginning.
+ - ``movexyz(x,y,z,r,q)`` - Move to pos x,y,z with rotation r. 
  
- - grip(grip,t,q) - grip is a binary value (0/1) where 1 denotes closed and 0 denotes open. t refers to the duration for which to enable the vacuum pump. The default t=0.5 is enough to completely open and a close the gripper. A smaller value such as 0.35 will partially open/close the gripper, but usually the value must be greater than 0.2 to have any effect. It would be quite useful if a mapping from time duration to how wide the gripper opens is implemented in the future as that will provide much more precise control for harder tasks.
+ **Note - There is some kind of bug with this method that the rotation, r only works for the first move command and then the gripper stops rotating for subsequent commands. But for now this isn't a major issue as the rotation has to be only set once in the beginning.**
+ 
+ - ``grip(grip,t,q)`` - grip is a binary value (0/1) where 1 denotes closed and 0 denotes open. t refers to the duration for which to enable the vacuum pump. The default t=0.5 is enough to completely open and a close the gripper. A smaller value such as 0.35 will partially open/close the gripper, but usually the value must be greater than 0.2 to have any effect. It would be quite useful if a mapping from time duration to how wide the gripper opens is implemented in the future as that will provide much more precise control for harder tasks.
  
  For both of these, q denotes whether the command is queued or not. Refer the [Dobot API](https://download.dobot.cc/development-protocol/dobot-magician/pdf/en/Dobot-Magician-API-Description.pdf) for a detailed description.
  
