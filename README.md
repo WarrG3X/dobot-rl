@@ -29,7 +29,7 @@ This repository currently provides -
   - mujoco - mjpro150
   - baselines - 0.1.5
   
-**The Gym Environment used for this project makes use of additional functions to map from sim to the real world, set goals/objects etc. So use this modified fork of [gym](https://github.com/WarrG3X/gym) instead. If this fork is way too behind the original repo or if you don't want to reinstall gym, then please refer the functions mentioned in the modified fork and manually add them to your gym installation.**
+**The Gym Environment used for this project makes use of additional functions to map from sim to the real world, set goals/objects etc. So use this modified fork of [gym](https://github.com/WarrG3X/gym) instead. If this fork is way too behind the original repo or if you don't want to reinstall gym, then please refer the functions mentioned [here](https://github.com/WarrG3X/gym/blob/master/README.rst) in the modified fork and manually add them to your gym installation.**
 
 ## Installation
 ```bash
@@ -92,7 +92,56 @@ The ``DobotController`` class currently provides two functions -
   - ``dobot_controller.py`` - Contains ``DobotController`` class
   - ``libDobotDll.so.1.0.0`` - The library needed by the API. Without this the API won't work.
   - ``DobotDllType.py`` - The main file that actually implements the Dobot API. It is quite exhaustive and implements all the methods refered in the [Dobot API Description](https://download.dobot.cc/development-protocol/dobot-magician/pdf/en/Dobot-Magician-API-Description.pdf). It is also responsible for correctly loading the Dll file. It is currently set to first search in the ``utils`` folder and if that fails, it refers to the ``LD_LIBRARY_PATH``. So if you move this file somewhere else, ensure that ``libDobotDll.so.1.0.0`` can be found in one of the locations in ``LD_LIBRARY_PATH``.
+
+As mentioned in the [Usage/Dobot Arm](#dobot-arm) section, ``dobot-cli`` is a convenient to script to test the working of the dobot-arm
   
 ### Mapping
 
+Mapping is needed for translating coordinates in the simulation to real world coordinates. The mapping is done by two functions, `sim2real` and `real2sim` which are defined in [fetch_env.py](https://github.com/WarrG3X/gym/blob/master/gym/envs/robotics/fetch_env.py) in the modified gym [fork](https://github.com/WarrG3X/gym). These functions are also defined in [dobot_env.py](https://github.com/WarrG3X/gym-dobot/blob/master/gym_dobot/envs/dobot_env.py) in the [gym-dobot](https://github.com/WarrG3X/gym-dobot) package.
+
+The range of the fetch robotic arm is much greater than the dobot arm, thus the coordinates are downscaled to map to the real world dobot arm. These functions also clip the input values so that the arm doesn't go out of range.
+
+If these functions are modified, to test the mapping, use the `fetch_viz.py` script in the `scripts` folder. It provides a `Tkinter` based GUI, to control a fetch arm using a trained reach policy by moving around the goal position. 
+
+```bash
+#To run a basic visualization.
+#The Tkinter GUI will have sliders for x,y,z coordinates which can be used to control the robot.
+python -m dobot_rl.scripts.fetch_viz
+
+ 
+#To control the robot along with the visualization. Press the Move Dobot button to move the robot and press the Grip button to toggle the gripper position.
+python -m dobot_rl.scripts.fetch_viz --robot=1
+```
+The main objective is to ensure that the robot in the simulation is able to reach every point on the table and real world robot can follow the same.
+
+
 ### Run Policy
+
+The `policies` folder contains policies trained for the `FetchPush`, `FetchPickAndPlace` and `FetchReach` environments. These policies were trained using [openai/baselines](https://github.com/openai/baselines). Currently the above code has only been tested for the `FetchPickAndPlace` and `FetchReach` environments.
+
+As stated in the introduction,  **Ideally, the policies should be trained on environments provided by [gym-dobot](https://github.com/WarrG3X/gym-dobot), but that is currently WIP.**
+
+The `run_policy` script in the `scripts` directory actually controls the robot using a trained a policy. 
+
+Run `python run_policy.py --help` from within the `scripts` directory to see the various flags/options.
+
+The basic working of the script is as follows - 
+
+ 1. Load policy file
+
+ 2. Initialize `DobotController`
+
+ 3. Set Time Horizon `T`. This should be set to the same value as `max_episode_steps` defined in `__init__.py` in `gym/envs/` folder as the main loop is run for `T` iterations. It is `50` by default.
+
+ 4. For each test rollout, the environment is reset. The `env.reset()` function has been modified to take an addtional parameter `goal=[x,y,z]` to initialize the environment with that goal. Also a new function `env.set_object(pos)` has been added to similarly initialize the object position. Refer [fetch_env.py](https://github.com/WarrG3X/gym/blob/master/gym/envs/robotics/fetch_env.py) and [robot_env.py](https://github.com/WarrG3X/gym/blob/master/gym/envs/robotics/robot_env.py) to see their implementations.
+
+ 5. For each timestep in a episode, we first get the `policy_output` by using `policy.get_actions()` function and then the `obs` by calling `step(policy_output)` on the `env`. The actual `observation` is stored in a variable `o` which is an array of values. The first three values correspond to the `x,y,z` of the `grip_site`. So we set `pos = env.sim2real(o[:3])` to obtain the actual gripper position after converting them to real world coordinates. This value is appended to a list called `points` which stores the gripper position for each timestep.
+
+ 6. For each timestep we also need the corresponding gripper status `[open/close]`. The fourth value of the `policy_output` corresponds to the gripper value and ranges from `-1` to `1`. We first convert it to a binary `0/1` value where `0=closed` and `1=open`. So we XOR the value with 1 to flip the value so that `0=open` and `1=closed` which is in accordance with the `grip` function in `DobotController`. This value is appended to a list called `grips` which stores the gripper position for each timestep.
+
+ 7. Now both the lists, `points` and `grips` have 50 sets of values each. But if we simply write all 50 values to the Dobot, it would very be slow. Thus we first use a line simplification algorithm called `Visvalingam-Whyatt` for poly-line vertex reduction. A working implementation of the algorithm has been taken from [here](https://github.com/Permafacture/Py-Visvalingam-Whyatt) and slightly modified for our use case. Refer `polysimplify` script in `utils` directory for its implementation. We define a value `N` which denotes the no. of points to extract. `N=4` for the `Reach` Environment and `N=10` for the `Pick` Environment. We store the reduced no. of points obtained from the simplifier in `traj_points`.
+
+ 8. Now for the `Pick` task, there are many coordinates which are important for the gripper to be able to pick the object. (Eg - The coordinate just above an object where the gripper can close to grasp the object). But the line simplifier approximates the trajectory to `10` points so it is not necessary that such coordinates will be preserved. As mentioned earlier each point is stored in `points` with its corresponding gripper status in `grips`. So we go through `points` and select each point where the value in `grips` is different from the previous value. This is because the points where the gripper status changes, are points where the gripper is actually opening/closing. So this second set of relevant points is stored in `grip_points`.
+
+ 9. Finally we take the union of both `traj_points` and `grip_points` called `final_points` that gives us a reduced set of values that both preserves the trajectory and the positions relevant for the gripper. Note that `grip_points` are not calculated in the case of `Reach/Push` tasks as the gripper is blocked. For each point `[x,y,z]` in `final_points` and its corresponding gripper status `g` in `grips` we call `dobot.movexyz(x,y,z,r)` and `dobot.grip(g)` where `dobot` is the `DobotController` object.
+

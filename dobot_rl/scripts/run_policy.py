@@ -41,20 +41,28 @@ def main(env,policy_file, seed, n_test_rollouts, render,robot,port):
     T = 50
 
     #Load Environment
+    #Only 4 points are taken if Reach Env. 10 are taken for Pick And Place.
     if 'Reach' in env:
         N = 4
     else:
         N = 10
+
+    #gym.make returns Time Limit Object. That is why we use gym.make().env
+    #to directly get the environment object
     env = gym.make(env).env
 
+    #n_test_rollouts refers to how many episodes to run
     for n in range(n_test_rollouts):
         if robot:
             #Set it to a convenient initial position
             dobot.movexyz(230,0,30,0)
+
             if env.block_gripper:
+                #Reach/Push Envs
                 dobot.grip(1)
                 current_g = 1
             else:
+                #Pick Env
                 dobot.grip(0)
                 current_g = 0
 
